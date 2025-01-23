@@ -1,6 +1,7 @@
 package scene
 
 import (
+	"dvd/app/button"
 	"dvd/app/dvd"
 	"time"
 
@@ -10,16 +11,22 @@ import (
 )
 
 type Scene struct {
-	dvd *dvd.Dvd
+	dvd    *dvd.Dvd
+	button *button.Button
 }
 
 func NewScene(r *sdl.Renderer) (*Scene, error) {
 	d, err := dvd.NewDvd(r)
 	if err != nil {
-		return nil, fmt.Errorf("Could create a DVD: %v", err)
+		return nil, fmt.Errorf("Could not create a DVD: %v", err)
 	}
 
-	scene := &Scene{dvd: d}
+	b, err := button.NewButton(r, "Control")
+	if err != nil {
+		return nil, fmt.Errorf("Could not create Button: %v", err)
+	}
+
+	scene := &Scene{dvd: d, button: b}
 
 	return scene, nil
 }
@@ -55,6 +62,10 @@ func (scene *Scene) handleEvent(event sdl.Event) bool {
 	switch event.(type) {
 	case *sdl.QuitEvent:
 		return true
+	case *sdl.MouseButtonEvent:
+		mouseEvent := event.(*sdl.MouseButtonEvent)
+
+		scene.button.Click(mouseEvent)
 	}
 
 	return false
@@ -71,6 +82,10 @@ func (scene *Scene) Paint(r *sdl.Renderer) error {
 		return fmt.Errorf("Could not scene the dvd: %v", err)
 	}
 
+	if err := scene.button.Paint(r); err != nil {
+		return fmt.Errorf("Could not scene the button: %v", err)
+	}
+
 	r.Present()
 
 	return nil
@@ -78,4 +93,5 @@ func (scene *Scene) Paint(r *sdl.Renderer) error {
 
 func (scene *Scene) Destroy() {
 	scene.dvd.Destroy()
+	scene.button.Destroy()
 }

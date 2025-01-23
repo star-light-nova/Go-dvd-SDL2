@@ -3,8 +3,9 @@ package app
 import (
 	"dvd/app/scene"
 	"fmt"
-	"github.com/veandco/go-sdl2/sdl"
 	"runtime"
+
+	"github.com/veandco/go-sdl2/sdl"
 )
 
 func Run() error {
