@@ -7,12 +7,17 @@ import (
 	"runtime"
 
 	"github.com/veandco/go-sdl2/sdl"
+	"github.com/veandco/go-sdl2/ttf"
 )
 
 func Run() error {
 	err := sdl.Init(sdl.INIT_EVERYTHING)
 	if err != nil {
 		return fmt.Errorf("Could not initialise SDL: %v", err)
+	}
+
+	if err := ttf.Init(); err != nil {
+		return fmt.Errorf("Could not initialise font API: %v", err)
 	}
 
 	defer sdl.Quit()

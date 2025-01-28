@@ -2,6 +2,7 @@ package scene
 
 import (
 	"dvd/app/button"
+	"dvd/app/checkbox"
 	"dvd/app/dvd"
 	"time"
 
@@ -11,8 +12,9 @@ import (
 )
 
 type Scene struct {
-	dvd    *dvd.Dvd
-	button *button.Button
+	dvd      *dvd.Dvd
+	button   *button.Button
+	checkbox *checkbox.Checkbox
 }
 
 func NewScene(r *sdl.Renderer) (*Scene, error) {
@@ -26,7 +28,12 @@ func NewScene(r *sdl.Renderer) (*Scene, error) {
 		return nil, fmt.Errorf("Could not create Button: %v", err)
 	}
 
-	scene := &Scene{dvd: d, button: b}
+	c, err := checkbox.NewCheckbox(r, "Always hit corners")
+	if err != nil {
+		return nil, fmt.Errorf("Could not create Checkbox: %v", err)
+	}
+
+	scene := &Scene{dvd: d, button: b, checkbox: c}
 
 	return scene, nil
 }
@@ -65,7 +72,11 @@ func (scene *Scene) handleEvent(event sdl.Event) bool {
 	case *sdl.MouseButtonEvent:
 		mouseEvent := event.(*sdl.MouseButtonEvent)
 
-		scene.button.Click(mouseEvent)
+		if scene.checkbox.IsHover(mouseEvent) {
+			scene.checkbox.Click(mouseEvent)
+		} else if scene.button.IsHover(mouseEvent) {
+			scene.button.Click(mouseEvent)
+		}
 	}
 
 	return false
@@ -86,6 +97,10 @@ func (scene *Scene) Paint(r *sdl.Renderer) error {
 		return fmt.Errorf("Could not scene the button: %v", err)
 	}
 
+	if err := scene.checkbox.Paint(r); err != nil {
+		return fmt.Errorf("Could not scene the checkbox: %v", err)
+	}
+
 	r.Present()
 
 	return nil
@@ -94,4 +109,5 @@ func (scene *Scene) Paint(r *sdl.Renderer) error {
 func (scene *Scene) Destroy() {
 	scene.dvd.Destroy()
 	scene.button.Destroy()
+	scene.checkbox.Destroy()
 }

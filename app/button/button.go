@@ -4,13 +4,11 @@ import (
 	"fmt"
 	"log"
 
+	fc "dvd/app/font_config"
+
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/veandco/go-sdl2/ttf"
 )
-
-var FONT_PATH = fmt.Sprintf("%s/assets/fonts/Roboto-Bold.ttf", sdl.GetBasePath())
-
-const FONT_SIZE int = 27
 
 type Button struct {
 	texture *sdl.Texture
@@ -20,20 +18,14 @@ type Button struct {
 }
 
 func NewButton(r *sdl.Renderer, label string) (*Button, error) {
-	if err := ttf.Init(); err != nil {
-		return nil, fmt.Errorf("Could not init font (button): %v", err)
-	}
-
-	f, err := ttf.OpenFont(FONT_PATH, FONT_SIZE)
+	f, err := ttf.OpenFont(fc.FONT_PATH, fc.FONT_SIZE)
 	if err != nil {
 		return nil, fmt.Errorf("Could not init Button Font: %v", err)
 	}
 
 	defer f.Close()
 
-	c := sdl.Color{R: 255, G: 255, B: 255, A: 255}
-
-	surface, err := f.RenderUTF8Blended(label, c)
+	surface, err := f.RenderUTF8Blended(label, fc.FONT_COLOR)
 	if err != nil {
 		return nil, fmt.Errorf("Could not init Button Surface: %v", err)
 	}
@@ -55,14 +47,19 @@ func NewButton(r *sdl.Renderer, label string) (*Button, error) {
 
 }
 
-func (b *Button) Click(mouseEvent *sdl.MouseButtonEvent) {
-	// TODO: do something
+func (b *Button) IsHover(mouseEvent *sdl.MouseButtonEvent) bool {
 	if mouseEvent.X >= b.X && mouseEvent.X <= b.X+b.W {
 		if mouseEvent.Y >= b.Y && mouseEvent.Y <= b.Y+b.H {
-			if mouseEvent.Button == sdl.BUTTON_LEFT && mouseEvent.State == sdl.RELEASED {
-				log.Printf("Button has clicked")
-			}
+			return true
 		}
+	}
+
+	return false
+}
+
+func (b *Button) Click(mouseEvent *sdl.MouseButtonEvent) {
+	if mouseEvent.Button == sdl.BUTTON_LEFT && mouseEvent.State == sdl.RELEASED {
+		log.Printf("Button has clicked")
 	}
 }
 
