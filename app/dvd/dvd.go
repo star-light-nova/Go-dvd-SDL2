@@ -2,6 +2,9 @@ package dvd
 
 import (
 	"fmt"
+
+	ac "dvd/app/app_configs"
+
 	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -38,8 +41,8 @@ func NewDvd(r *sdl.Renderer) (*Dvd, error) {
 		texture: t,
 		W:       156,
 		H:       128,
-		X:       0,
-		Y:       0,
+		X:       (ac.SCREEN_WIDTH - 156) / 2,
+		Y:       (ac.SCREEN_HEIGHT - 128) / 2,
 	}
 
 	return dvd, nil
@@ -63,13 +66,13 @@ var directionX int32 = 1
 var directionY int32 = 1
 
 func (d *Dvd) Update() {
-	if d.X < 0 || d.X+d.W >= 800 {
+	if d.X < 0 || d.X+d.W >= ac.SCREEN_WIDTH {
 		directionX = -directionX
 	}
 
 	d.X += directionX
 
-	if d.Y < 0 || d.Y+d.H >= 600 {
+	if d.Y < 0 || d.Y+d.H >= ac.SCREEN_HEIGHT {
 		directionY = -directionY
 	}
 

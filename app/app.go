@@ -1,6 +1,7 @@
 package app
 
 import (
+	ac "dvd/app/app_configs"
 	"dvd/app/scene"
 	"fmt"
 	"runtime"
@@ -16,7 +17,7 @@ func Run() error {
 
 	defer sdl.Quit()
 
-	w, r, err := sdl.CreateWindowAndRenderer(800, 600, sdl.WINDOW_SHOWN)
+	w, r, err := sdl.CreateWindowAndRenderer(ac.SCREEN_WIDTH, ac.SCREEN_HEIGHT, sdl.WINDOW_SHOWN)
 	if err != nil {
 		return fmt.Errorf("Could not create a window: %v", err)
 	}

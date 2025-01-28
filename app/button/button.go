@@ -60,12 +60,6 @@ func (b *Button) Click(mouseEvent *sdl.MouseButtonEvent) {
 	if mouseEvent.X >= b.X && mouseEvent.X <= b.X+b.W {
 		if mouseEvent.Y >= b.Y && mouseEvent.Y <= b.Y+b.H {
 			if mouseEvent.Button == sdl.BUTTON_LEFT && mouseEvent.State == sdl.RELEASED {
-				f, err := sdl.PushEvent(&sdl.QuitEvent{Type: sdl.QUIT, Timestamp: sdl.GetTicks()})
-
-				if err != nil {
-					log.Printf("Could not send an quit event: %v %v", err, f)
-				}
-
 				log.Printf("Button has clicked")
 			}
 		}
