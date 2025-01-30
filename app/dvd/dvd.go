@@ -78,3 +78,19 @@ func (d *Dvd) Update() {
 
 	d.Y += directionY
 }
+
+// TODO: it is not working in one tick
+func (d *Dvd) ControlUpdate(kevent *sdl.KeyboardEvent) {
+	if kevent.State == sdl.PRESSED {
+		switch kevent.Keysym.Scancode {
+		case sdl.K_UP:
+			d.Y -= 5
+		case sdl.K_DOWN:
+			d.Y += 5
+		case sdl.K_RIGHT:
+			d.X += 5
+		case sdl.K_LEFT:
+			d.X -= 5
+		}
+	}
+}

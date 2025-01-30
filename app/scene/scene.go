@@ -77,6 +77,10 @@ func (scene *Scene) handleEvent(event sdl.Event) bool {
 		} else if scene.button.IsHover(mouseEvent) {
 			scene.button.Click(mouseEvent)
 		}
+	case *sdl.KeyboardEvent:
+		keyboardEvent := event.(*sdl.KeyboardEvent)
+
+		scene.dvd.ControlUpdate(keyboardEvent)
 	}
 
 	return false
