@@ -3,14 +3,13 @@ package checkbox
 import (
 	fc "dvd/app/font_config"
 	"fmt"
-	"log"
 
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/veandco/go-sdl2/ttf"
 )
 
 type Checkbox struct {
-	texture *sdl.Texture
+	textures [2]*sdl.Texture
 
 	IsSelected bool
 
@@ -26,26 +25,60 @@ func NewCheckbox(r *sdl.Renderer, label string) (*Checkbox, error) {
 
 	defer f.Close()
 
-	sur, err := f.RenderUTF8Solid(label, fc.FONT_COLOR)
+	surT, surF, err := createSurfaces(f, label)
 	if err != nil {
-		return nil, fmt.Errorf("Could not render text for Checkbox: %v", err)
+		return nil, fmt.Errorf("Could not create a T/F surfaces: %v", err)
 	}
 
-	defer sur.Free()
+	defer surT.Free()
+	defer surF.Free()
 
-	texture, err := r.CreateTextureFromSurface(sur)
+	textureT, textureF, err := createTextures(r, surT, surF)
 	if err != nil {
-		return nil, fmt.Errorf("Could not create a texture for Checkbox: %v", err)
+		return nil, fmt.Errorf("Could not create a T/F textures: %v", err)
 	}
 
 	return &Checkbox{
-		texture:    texture,
+		textures:   [2]*sdl.Texture{textureF, textureT},
 		IsSelected: false,
 		X:          0,
 		Y:          128,
 		W:          128,
 		H:          64,
 	}, nil
+}
+
+// surfaces with True and False values
+func createSurfaces(f *ttf.Font, label string) (surT, surF *sdl.Surface, err error) {
+	labelFalse := fmt.Sprintf("%s: %t", label, false)
+
+	surT, err = f.RenderUTF8Solid(labelFalse, fc.FONT_COLOR)
+	if err != nil {
+		return nil, nil, fmt.Errorf("Could not render text for Checkbox: %v", err)
+	}
+
+	labelTrue := fmt.Sprintf("%s: %t", label, true)
+	surF, err = f.RenderUTF8Solid(labelTrue, fc.FONT_COLOR)
+	if err != nil {
+		return nil, nil, fmt.Errorf("Could not render text for Checkbox: %v", err)
+	}
+
+	return
+}
+
+// Texture with True and False values
+func createTextures(r *sdl.Renderer, surT, surF *sdl.Surface) (textureT, textureF *sdl.Texture, err error) {
+	textureT, err = r.CreateTextureFromSurface(surT)
+	if err != nil {
+		return nil, nil, fmt.Errorf("Could not create a texture for Checkbox: %v", err)
+	}
+
+	textureF, err = r.CreateTextureFromSurface(surF)
+	if err != nil {
+		return nil, nil, fmt.Errorf("Could not create a texture for Checkbox: %v", err)
+	}
+
+	return
 }
 
 func (c *Checkbox) IsHover(mouseEvent *sdl.MouseButtonEvent) bool {
@@ -61,20 +94,27 @@ func (c *Checkbox) IsHover(mouseEvent *sdl.MouseButtonEvent) bool {
 func (c *Checkbox) Click(mouseEvent *sdl.MouseButtonEvent) {
 	if mouseEvent.Button == sdl.BUTTON_LEFT && mouseEvent.State == sdl.RELEASED {
 		c.IsSelected = !c.IsSelected
-		log.Printf("Checkbox is selected %v", c.IsSelected)
 	}
 }
 
 func (c *Checkbox) Paint(r *sdl.Renderer) error {
 	rect := &sdl.Rect{X: c.X, Y: c.Y, W: c.W, H: c.H}
 
-	if err := r.Copy(c.texture, nil, rect); err != nil {
-		return fmt.Errorf("Could not render Checkbox: %v", err)
+	if c.IsSelected {
+		if err := r.Copy(c.textures[1], nil, rect); err != nil {
+			return fmt.Errorf("Could not render Checkbox: %v", err)
+		}
+	} else {
+		if err := r.Copy(c.textures[0], nil, rect); err != nil {
+			return fmt.Errorf("Could not render Checkbox: %v", err)
+		}
 	}
 
 	return nil
 }
 
 func (c *Checkbox) Destroy() {
-	c.texture.Destroy()
+	for _, texture := range c.textures {
+		texture.Destroy()
+	}
 }
