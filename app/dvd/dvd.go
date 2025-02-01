@@ -2,6 +2,7 @@ package dvd
 
 import (
 	"fmt"
+	"sync"
 
 	ac "dvd/app/app_configs"
 
@@ -14,7 +15,10 @@ const (
 )
 
 type Dvd struct {
+	mu      sync.RWMutex
 	texture *sdl.Texture
+
+	ControlEvents chan *sdl.KeyboardEvent
 
 	X, Y int32
 	W, H int32
@@ -37,18 +41,24 @@ func NewDvd(r *sdl.Renderer) (*Dvd, error) {
 		return nil, fmt.Errorf("Could not create a texture from surface: %v", err)
 	}
 
+	kevents := make(chan *sdl.KeyboardEvent)
+
 	dvd := &Dvd{
-		texture: t,
-		W:       156,
-		H:       128,
-		X:       (ac.SCREEN_WIDTH - 156) / 2,
-		Y:       (ac.SCREEN_HEIGHT - 128) / 2,
+		texture:       t,
+		ControlEvents: kevents,
+		W:             156,
+		H:             128,
+		X:             (ac.SCREEN_WIDTH - 156) / 2,
+		Y:             (ac.SCREEN_HEIGHT - 128) / 2,
 	}
 
 	return dvd, nil
 }
 
 func (d *Dvd) Paint(r *sdl.Renderer) error {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+
 	rect := &sdl.Rect{X: d.X, Y: d.Y, W: d.W, H: d.H}
 
 	if err := r.Copy(d.texture, nil, rect); err != nil {
@@ -59,38 +69,69 @@ func (d *Dvd) Paint(r *sdl.Renderer) error {
 }
 
 func (d *Dvd) Destroy() {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+
 	d.texture.Destroy()
+
+	// Close the channel of events.
+	close(d.ControlEvents)
 }
 
 var directionX int32 = 1
 var directionY int32 = 1
 
 func (d *Dvd) Update() {
+	d.mu.RLock()
+	defer d.mu.RUnlock()
+
+	select {
+	case kevent := <-d.ControlEvents:
+		d.controlUpdate(kevent)
+	default:
+		d.boundaries()
+
+		d.X += directionX
+		d.Y += directionY
+	}
+}
+
+func (d *Dvd) controlUpdate(kevent *sdl.KeyboardEvent) {
+	d.mu.RLock()
+	defer d.mu.RUnlock()
+
+	switch kevent.Keysym.Sym {
+	case sdl.K_UP:
+		directionY = -abs(directionY)
+	case sdl.K_DOWN:
+		directionY = abs(directionY)
+	case sdl.K_RIGHT:
+		directionX = abs(directionX)
+	case sdl.K_LEFT:
+		directionX = -abs(directionX)
+	}
+
+	d.boundaries()
+
+	d.X += directionX
+	d.Y += directionY
+}
+
+func (d *Dvd) boundaries() {
 	if d.X < 0 || d.X+d.W >= ac.SCREEN_WIDTH {
 		directionX = -directionX
 	}
-
-	d.X += directionX
 
 	if d.Y < 0 || d.Y+d.H >= ac.SCREEN_HEIGHT {
 		directionY = -directionY
 	}
 
-	d.Y += directionY
 }
 
-// TODO: it is not working in one tick
-func (d *Dvd) ControlUpdate(kevent *sdl.KeyboardEvent) {
-	if kevent.State == sdl.PRESSED {
-		switch kevent.Keysym.Scancode {
-		case sdl.K_UP:
-			d.Y -= 5
-		case sdl.K_DOWN:
-			d.Y += 5
-		case sdl.K_RIGHT:
-			d.X += 5
-		case sdl.K_LEFT:
-			d.X -= 5
-		}
+func abs(number int32) int32 {
+	if number < 0 {
+		return -number
 	}
+
+	return number
 }

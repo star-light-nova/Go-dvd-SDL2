@@ -78,9 +78,9 @@ func (scene *Scene) handleEvent(event sdl.Event) bool {
 			scene.button.Click(mouseEvent)
 		}
 	case *sdl.KeyboardEvent:
-		keyboardEvent := event.(*sdl.KeyboardEvent)
+		kevent := event.(*sdl.KeyboardEvent)
 
-		scene.dvd.ControlUpdate(keyboardEvent)
+		go func() { scene.dvd.ControlEvents <- kevent }()
 	}
 
 	return false
