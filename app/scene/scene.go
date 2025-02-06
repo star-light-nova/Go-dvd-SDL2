@@ -3,6 +3,7 @@ package scene
 import (
 	"dvd/app/button"
 	"dvd/app/checkbox"
+	"dvd/app/control_menu"
 	"dvd/app/dvd"
 	"time"
 
@@ -12,9 +13,10 @@ import (
 )
 
 type Scene struct {
-	dvd      *dvd.Dvd
-	button   *button.Button
-	checkbox *checkbox.Checkbox
+	dvd         *dvd.Dvd
+	button      *button.Button
+	checkbox    *checkbox.Checkbox
+	controlMenu *control_menu.ControlMenu
 }
 
 func NewScene(r *sdl.Renderer) (*Scene, error) {
@@ -33,7 +35,12 @@ func NewScene(r *sdl.Renderer) (*Scene, error) {
 		return nil, fmt.Errorf("Could not create Checkbox: %v", err)
 	}
 
-	scene := &Scene{dvd: d, button: b, checkbox: c}
+	cm, err := control_menu.NewControlMenu(r)
+	if err != nil {
+		return nil, fmt.Errorf("Could not create Control Menu: %v", err)
+	}
+
+	scene := &Scene{dvd: d, button: b, checkbox: c, controlMenu: cm}
 
 	return scene, nil
 }
@@ -81,6 +88,7 @@ func (scene *Scene) handleEvent(event sdl.Event) bool {
 		kevent := event.(*sdl.KeyboardEvent)
 
 		go func() { scene.dvd.ControlEvents <- kevent }()
+		go func() { scene.controlMenu.ControlMenuEvents <- kevent }()
 	}
 
 	return false
@@ -88,10 +96,20 @@ func (scene *Scene) handleEvent(event sdl.Event) bool {
 
 func (scene *Scene) Update() {
 	scene.dvd.Update()
+	scene.controlMenu.Update()
 }
 
 func (scene *Scene) Paint(r *sdl.Renderer) error {
+	// Default colour
+	if err := r.SetDrawColor(0, 0, 0, 0); err != nil {
+		return err
+	}
+
 	r.Clear()
+
+	if err := scene.controlMenu.Paint(r); err != nil {
+		return fmt.Errorf("Could not scene the Control Menu: %v", err)
+	}
 
 	if err := scene.dvd.Paint(r); err != nil {
 		return fmt.Errorf("Could not scene the dvd: %v", err)
@@ -114,4 +132,5 @@ func (scene *Scene) Destroy() {
 	scene.dvd.Destroy()
 	scene.button.Destroy()
 	scene.checkbox.Destroy()
+	scene.controlMenu.Destroy()
 }
