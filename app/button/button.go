@@ -59,7 +59,7 @@ func (b *Button) IsHover(mouseEvent *sdl.MouseButtonEvent) bool {
 
 func (b *Button) Click(mouseEvent *sdl.MouseButtonEvent) {
 	if mouseEvent.Button == sdl.BUTTON_LEFT && mouseEvent.State == sdl.RELEASED {
-		log.Printf("Button has clicked")
+		log.Printf("Button has clicked: %v", b.Y)
 	}
 }
 
@@ -71,6 +71,11 @@ func (b *Button) Paint(r *sdl.Renderer) error {
 	}
 
 	return nil
+}
+
+// TODO: remove but change t => T
+func (b *Button) Texture() *sdl.Texture {
+	return b.texture
 }
 
 func (b *Button) Destroy() {

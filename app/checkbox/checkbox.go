@@ -43,7 +43,7 @@ func NewCheckbox(r *sdl.Renderer, label string) (*Checkbox, error) {
 		IsSelected: false,
 		X:          0,
 		Y:          128,
-		W:          128,
+		W:          250,
 		H:          64,
 	}, nil
 }
@@ -111,6 +111,14 @@ func (c *Checkbox) Paint(r *sdl.Renderer) error {
 	}
 
 	return nil
+}
+
+func (c *Checkbox) Texture() *sdl.Texture {
+	if c.IsSelected {
+		return c.textures[1]
+	}
+
+	return c.textures[0]
 }
 
 func (c *Checkbox) Destroy() {
