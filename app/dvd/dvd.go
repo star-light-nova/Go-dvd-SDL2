@@ -2,6 +2,7 @@ package dvd
 
 import (
 	"fmt"
+	"math/rand"
 	"sync"
 
 	ac "dvd/app/app_configs"
@@ -19,6 +20,12 @@ type Dvd struct {
 	texture *sdl.Texture
 
 	ControlEvents chan *sdl.KeyboardEvent
+
+	IsTargetX bool
+	TargetX   int32
+
+	IsTargetY bool
+	TargetY   int32
 
 	X, Y int32
 	W, H int32
@@ -81,6 +88,9 @@ func (d *Dvd) Destroy() {
 var directionX int32 = 1
 var directionY int32 = 1
 
+var Ytargets = [2]int32{0, 600}
+var Xtargets = [2]int32{0, 800}
+
 func (d *Dvd) Update() {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
@@ -90,6 +100,38 @@ func (d *Dvd) Update() {
 		d.controlUpdate(kevent)
 	default:
 		d.boundaries()
+
+		if d.IsTargetY {
+			if d.Y == d.TargetY {
+				// do nothing
+			} else if d.Y+d.H < d.TargetY {
+				directionY = abs(directionY)
+			} else {
+				directionY = -abs(directionY)
+			}
+		}
+
+		if d.IsTargetX {
+			if d.X == d.TargetX {
+				// do nothing
+			} else if d.X+d.W < d.TargetX {
+				directionX = abs(directionX)
+			} else {
+				directionX = -abs(directionX)
+			}
+		}
+
+		if d.IsTargetX == d.IsTargetY && d.IsTargetX == true {
+			if (d.X == d.TargetX || d.X+d.W == d.TargetX) &&
+				(d.Y == d.TargetY || d.Y+d.H == d.TargetY) {
+				// [0-1]
+				xRand := rand.Intn(2)
+				yRand := rand.Intn(2)
+
+				d.TargetX = Xtargets[xRand]
+				d.TargetY = Ytargets[yRand]
+			}
+		}
 
 		d.X += directionX
 		d.Y += directionY
@@ -118,11 +160,11 @@ func (d *Dvd) controlUpdate(kevent *sdl.KeyboardEvent) {
 }
 
 func (d *Dvd) boundaries() {
-	if d.X < 0 || d.X+d.W >= ac.SCREEN_WIDTH {
+	if d.X <= 0 || d.X+d.W >= ac.SCREEN_WIDTH {
 		directionX = -directionX
 	}
 
-	if d.Y < 0 || d.Y+d.H >= ac.SCREEN_HEIGHT {
+	if d.Y <= 0 || d.Y+d.H >= ac.SCREEN_HEIGHT {
 		directionY = -directionY
 	}
 
