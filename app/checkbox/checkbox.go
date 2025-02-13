@@ -25,15 +25,15 @@ func NewCheckbox(r *sdl.Renderer, label string) (*Checkbox, error) {
 
 	defer f.Close()
 
-	surT, surF, err := createSurfaces(f, label)
+	surF, surT, err := createSurfaces(f, label)
 	if err != nil {
 		return nil, fmt.Errorf("Could not create a T/F surfaces: %v", err)
 	}
 
-	defer surT.Free()
 	defer surF.Free()
+	defer surT.Free()
 
-	textureT, textureF, err := createTextures(r, surT, surF)
+	textureF, textureT, err := createTextures(r, surF, surT)
 	if err != nil {
 		return nil, fmt.Errorf("Could not create a T/F textures: %v", err)
 	}
@@ -49,16 +49,16 @@ func NewCheckbox(r *sdl.Renderer, label string) (*Checkbox, error) {
 }
 
 // surfaces with True and False values
-func createSurfaces(f *ttf.Font, label string) (surT, surF *sdl.Surface, err error) {
+func createSurfaces(f *ttf.Font, label string) (surF, surT *sdl.Surface, err error) {
 	labelFalse := fmt.Sprintf("%s: %t", label, false)
 
-	surT, err = f.RenderUTF8Solid(labelFalse, fc.FONT_COLOR)
+	surF, err = f.RenderUTF8Solid(labelFalse, fc.FONT_COLOR)
 	if err != nil {
 		return nil, nil, fmt.Errorf("Could not render text for Checkbox: %v", err)
 	}
 
 	labelTrue := fmt.Sprintf("%s: %t", label, true)
-	surF, err = f.RenderUTF8Solid(labelTrue, fc.FONT_COLOR)
+	surT, err = f.RenderUTF8Solid(labelTrue, fc.FONT_COLOR)
 	if err != nil {
 		return nil, nil, fmt.Errorf("Could not render text for Checkbox: %v", err)
 	}
@@ -67,13 +67,13 @@ func createSurfaces(f *ttf.Font, label string) (surT, surF *sdl.Surface, err err
 }
 
 // Texture with True and False values
-func createTextures(r *sdl.Renderer, surT, surF *sdl.Surface) (textureT, textureF *sdl.Texture, err error) {
-	textureT, err = r.CreateTextureFromSurface(surT)
+func createTextures(r *sdl.Renderer, surF, surT *sdl.Surface) (textureF, textureT *sdl.Texture, err error) {
+	textureF, err = r.CreateTextureFromSurface(surF)
 	if err != nil {
 		return nil, nil, fmt.Errorf("Could not create a texture for Checkbox: %v", err)
 	}
 
-	textureF, err = r.CreateTextureFromSurface(surF)
+	textureT, err = r.CreateTextureFromSurface(surT)
 	if err != nil {
 		return nil, nil, fmt.Errorf("Could not create a texture for Checkbox: %v", err)
 	}

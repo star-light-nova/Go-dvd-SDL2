@@ -80,7 +80,7 @@ func (scene *Scene) handleEvent(event sdl.Event) bool {
 
 func (scene *Scene) Update() {
 	scene.dvd.Update()
-	scene.controlMenu.Update()
+	scene.controlMenu.Update(scene.dvd)
 }
 
 func (scene *Scene) Paint(r *sdl.Renderer) error {

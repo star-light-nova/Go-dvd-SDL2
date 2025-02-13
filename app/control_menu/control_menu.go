@@ -4,6 +4,7 @@ import (
 	ac "dvd/app/app_configs"
 	"dvd/app/button"
 	"dvd/app/checkbox"
+	"dvd/app/dvd"
 	"fmt"
 	"time"
 
@@ -67,7 +68,7 @@ func NewControlMenu(r *sdl.Renderer) (*ControlMenu, error) {
 	}, nil
 }
 
-func (cm *ControlMenu) Update() {
+func (cm *ControlMenu) Update(dvd *dvd.Dvd) {
 	/*
 				                     ＿＿
 						　　　　　🌸＞　　フ
@@ -120,6 +121,9 @@ func (cm *ControlMenu) Update() {
 		if cm.isOpen {
 			if cm.checkbox.IsHover(mbevent) {
 				cm.checkbox.Click(mbevent)
+
+				dvd.IsTargetX = cm.checkbox.IsSelected
+				dvd.IsTargetY = dvd.IsTargetX
 			} else if cm.button.IsHover(mbevent) {
 				cm.button.Click(mbevent)
 			}
