@@ -65,7 +65,19 @@ func (scene *Scene) handleEvent(event sdl.Event) bool {
 	case *sdl.MouseButtonEvent:
 		mouseEvent := event.(*sdl.MouseButtonEvent)
 
-		go func() { scene.controlMenu.MouseButtonEvents <- mouseEvent }()
+		go func() {
+			scene.controlMenu.MouseButtonEvents <- mouseEvent
+		}()
+	case *sdl.MouseMotionEvent:
+		mouseMotionEvent := event.(*sdl.MouseMotionEvent)
+
+		_, _, mouseState := sdl.GetMouseState()
+
+		if mouseMotionEvent.State == sdl.BUTTON_LEFT && mouseState == sdl.PRESSED {
+			go func() {
+				scene.dvd.MouseMotionEvents <- mouseMotionEvent
+			}()
+		}
 	case *sdl.KeyboardEvent:
 		kevent := event.(*sdl.KeyboardEvent)
 

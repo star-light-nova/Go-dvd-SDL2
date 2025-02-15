@@ -8,7 +8,7 @@ TODOS:
 - [x] Always hit corners (DVD) (checkbox?)
 - [ ] Change background (scene img + colour)
 - [ ] Change logo (DVD img)
-- [ ] Allow to drag-and-drop (DVD)
+- [x] Allow to drag-and-drop (DVD)
 - [ ] Bounce instead of float (DVD)
 - [ ] Alter dimensions (DVD)
 - [ ] Starting position (DVD)

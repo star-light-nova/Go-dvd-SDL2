@@ -19,7 +19,8 @@ type Dvd struct {
 	mu      sync.RWMutex
 	texture *sdl.Texture
 
-	ControlEvents chan *sdl.KeyboardEvent
+	ControlEvents     chan *sdl.KeyboardEvent
+	MouseMotionEvents chan *sdl.MouseMotionEvent
 
 	IsTargetX bool
 	TargetX   int32
@@ -49,14 +50,16 @@ func NewDvd(r *sdl.Renderer) (*Dvd, error) {
 	}
 
 	kevents := make(chan *sdl.KeyboardEvent)
+	mevents := make(chan *sdl.MouseMotionEvent)
 
 	dvd := &Dvd{
-		texture:       t,
-		ControlEvents: kevents,
-		W:             156,
-		H:             128,
-		X:             (ac.SCREEN_WIDTH - 156) / 2,
-		Y:             (ac.SCREEN_HEIGHT - 128) / 2,
+		texture:           t,
+		ControlEvents:     kevents,
+		MouseMotionEvents: mevents,
+		W:                 156,
+		H:                 128,
+		X:                 (ac.SCREEN_WIDTH - 156) / 2,
+		Y:                 (ac.SCREEN_HEIGHT - 128) / 2,
 	}
 
 	return dvd, nil
@@ -83,6 +86,7 @@ func (d *Dvd) Destroy() {
 
 	// Close the channel of events.
 	close(d.ControlEvents)
+	close(d.MouseMotionEvents)
 }
 
 var directionX int32 = 1
@@ -98,6 +102,9 @@ func (d *Dvd) Update() {
 	select {
 	case kevent := <-d.ControlEvents:
 		d.controlUpdate(kevent)
+	case mevent := <-d.MouseMotionEvents:
+		d.X = mevent.X
+		d.Y = mevent.Y
 	default:
 		d.boundaries()
 
@@ -168,6 +175,16 @@ func (d *Dvd) boundaries() {
 		directionY = -directionY
 	}
 
+}
+
+func (d *Dvd) isHover(mevent *sdl.MouseMotionEvent) bool {
+	if mevent.X >= d.X && mevent.X <= d.X+d.W {
+		if mevent.Y >= d.Y && mevent.Y <= d.Y+d.H {
+			return true
+		}
+	}
+
+	return false
 }
 
 func abs(number int32) int32 {
