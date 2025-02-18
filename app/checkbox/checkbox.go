@@ -91,6 +91,7 @@ func (c *Checkbox) IsHover(mouseEvent *sdl.MouseButtonEvent) bool {
 	return false
 }
 
+// Returns `true` if click has happened, otherwise `false`.
 func (c *Checkbox) Click(mouseEvent *sdl.MouseButtonEvent) bool {
 	if mouseEvent.Button == sdl.BUTTON_LEFT && mouseEvent.State == sdl.RELEASED {
 		c.IsSelected = !c.IsSelected

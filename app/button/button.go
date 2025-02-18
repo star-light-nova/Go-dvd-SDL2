@@ -56,6 +56,7 @@ func (b *Button) IsHover(mouseEvent *sdl.MouseButtonEvent) bool {
 	return false
 }
 
+// Returns `true` if click has happened, otherwise `false`.
 func (b *Button) Click(mouseEvent *sdl.MouseButtonEvent) bool {
 	if mouseEvent.Button == sdl.BUTTON_LEFT && mouseEvent.State == sdl.RELEASED {
 		return true
