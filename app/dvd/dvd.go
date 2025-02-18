@@ -52,14 +52,16 @@ func NewDvd(r *sdl.Renderer) (*Dvd, error) {
 	kevents := make(chan *sdl.KeyboardEvent)
 	mevents := make(chan *sdl.MouseMotionEvent)
 
+	var x, y int32 = 156, 128
+
 	dvd := &Dvd{
 		texture:           t,
 		ControlEvents:     kevents,
 		MouseMotionEvents: mevents,
-		W:                 156,
-		H:                 128,
-		X:                 (ac.SCREEN_WIDTH - 156) / 2,
-		Y:                 (ac.SCREEN_HEIGHT - 128) / 2,
+		X:                 (ac.SCREEN_WIDTH - x) / 2,
+		Y:                 (ac.SCREEN_HEIGHT - y) / 2,
+		W:                 x,
+		H:                 y,
 	}
 
 	return dvd, nil
@@ -92,8 +94,8 @@ func (d *Dvd) Destroy() {
 var directionX int32 = 1
 var directionY int32 = 1
 
-var Ytargets = [2]int32{0, 600}
-var Xtargets = [2]int32{0, 800}
+var Ytargets = [2]int32{0, ac.SCREEN_HEIGHT}
+var Xtargets = [2]int32{0, ac.SCREEN_WIDTH}
 
 func (d *Dvd) Update() {
 	d.mu.RLock()
