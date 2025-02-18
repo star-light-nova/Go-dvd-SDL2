@@ -2,7 +2,6 @@ package button
 
 import (
 	"fmt"
-	"log"
 
 	fc "dvd/app/font_config"
 
@@ -13,8 +12,8 @@ import (
 type Button struct {
 	texture *sdl.Texture
 
-	H, W int32
 	X, Y int32
+	H, W int32
 }
 
 func NewButton(r *sdl.Renderer, label string) (*Button, error) {
@@ -25,7 +24,7 @@ func NewButton(r *sdl.Renderer, label string) (*Button, error) {
 
 	defer f.Close()
 
-	surface, err := f.RenderUTF8Blended(label, fc.FONT_COLOR)
+	surface, err := f.RenderUTF8Solid(label, fc.FONT_COLOR)
 	if err != nil {
 		return nil, fmt.Errorf("Could not init Button Surface: %v", err)
 	}
@@ -39,10 +38,10 @@ func NewButton(r *sdl.Renderer, label string) (*Button, error) {
 
 	return &Button{
 		texture: texture,
-		H:       50,
-		W:       50,
 		X:       0,
 		Y:       0,
+		H:       50,
+		W:       250,
 	}, nil
 
 }
@@ -57,10 +56,12 @@ func (b *Button) IsHover(mouseEvent *sdl.MouseButtonEvent) bool {
 	return false
 }
 
-func (b *Button) Click(mouseEvent *sdl.MouseButtonEvent) {
+func (b *Button) Click(mouseEvent *sdl.MouseButtonEvent) bool {
 	if mouseEvent.Button == sdl.BUTTON_LEFT && mouseEvent.State == sdl.RELEASED {
-		log.Printf("Button has clicked: %v", b.Y)
+		return true
 	}
+
+	return false
 }
 
 func (b *Button) Paint(r *sdl.Renderer) error {
@@ -73,7 +74,6 @@ func (b *Button) Paint(r *sdl.Renderer) error {
 	return nil
 }
 
-// TODO: remove but change t => T
 func (b *Button) Texture() *sdl.Texture {
 	return b.texture
 }

@@ -42,9 +42,9 @@ func NewCheckbox(r *sdl.Renderer, label string) (*Checkbox, error) {
 		textures:   [2]*sdl.Texture{textureF, textureT},
 		IsSelected: false,
 		X:          0,
-		Y:          128,
+		Y:          0,
 		W:          250,
-		H:          64,
+		H:          50,
 	}, nil
 }
 
@@ -91,10 +91,14 @@ func (c *Checkbox) IsHover(mouseEvent *sdl.MouseButtonEvent) bool {
 	return false
 }
 
-func (c *Checkbox) Click(mouseEvent *sdl.MouseButtonEvent) {
+func (c *Checkbox) Click(mouseEvent *sdl.MouseButtonEvent) bool {
 	if mouseEvent.Button == sdl.BUTTON_LEFT && mouseEvent.State == sdl.RELEASED {
 		c.IsSelected = !c.IsSelected
+
+		return true
 	}
+
+	return false
 }
 
 func (c *Checkbox) Paint(r *sdl.Renderer) error {

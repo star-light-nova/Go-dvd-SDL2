@@ -40,7 +40,7 @@ func NewControlMenu(r *sdl.Renderer) (*ControlMenu, error) {
 	keyEvents := make(chan *sdl.KeyboardEvent)
 	mouseButtonEvents := make(chan *sdl.MouseButtonEvent)
 
-	b, err := button.NewButton(r, "Control")
+	b, err := button.NewButton(r, "Reset position")
 	if err != nil {
 		return nil, fmt.Errorf("Could not create Button: %v", err)
 	}
@@ -120,12 +120,15 @@ func (cm *ControlMenu) Update(dvd *dvd.Dvd) {
 	case mbevent := <-cm.MouseButtonEvents:
 		if cm.isOpen {
 			if cm.checkbox.IsHover(mbevent) {
-				cm.checkbox.Click(mbevent)
-
-				dvd.IsTargetX = cm.checkbox.IsSelected
-				dvd.IsTargetY = dvd.IsTargetX
+				if cm.checkbox.Click(mbevent) {
+					dvd.IsTargetX = cm.checkbox.IsSelected
+					dvd.IsTargetY = dvd.IsTargetX
+				}
 			} else if cm.button.IsHover(mbevent) {
-				cm.button.Click(mbevent)
+				if cm.button.Click(mbevent) {
+					dvd.Y = (ac.SCREEN_HEIGHT - dvd.H) / 2
+					dvd.X = (ac.SCREEN_WIDTH - dvd.W) / 2
+				}
 			}
 		}
 	default:
