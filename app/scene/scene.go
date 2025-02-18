@@ -98,7 +98,7 @@ func (scene *Scene) Update() {
 func (scene *Scene) Paint(r *sdl.Renderer) error {
 	// Default colour
 	if err := r.SetDrawColor(0, 0, 0, 0); err != nil {
-		return err
+		return fmt.Errorf("Could not set default colour: %v", err)
 	}
 
 	r.Clear()

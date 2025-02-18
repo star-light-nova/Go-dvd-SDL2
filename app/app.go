@@ -10,16 +10,18 @@ import (
 	"github.com/veandco/go-sdl2/ttf"
 )
 
-func Run() error {
+func init() {
 	err := sdl.Init(sdl.INIT_EVERYTHING)
 	if err != nil {
-		return fmt.Errorf("Could not initialise SDL: %v", err)
+		panic(fmt.Errorf("Could not initialise SDL: %v", err))
 	}
 
 	if err := ttf.Init(); err != nil {
-		return fmt.Errorf("Could not initialise font API: %v", err)
+		panic(fmt.Errorf("Could not initialise font API: %v", err))
 	}
+}
 
+func Run() error {
 	defer sdl.Quit()
 
 	w, r, err := sdl.CreateWindowAndRenderer(ac.SCREEN_WIDTH, ac.SCREEN_HEIGHT, sdl.WINDOW_SHOWN)
@@ -27,14 +29,14 @@ func Run() error {
 		return fmt.Errorf("Could not create a window: %v", err)
 	}
 
+	defer w.Destroy()
+
 	// MacOS hack.
 	sdl.PumpEvents()
 
-	defer w.Destroy()
-
 	scene, err := scene.NewScene(r)
 	if err != nil {
-		return fmt.Errorf("Couldn not create a scene: %v", err)
+		return fmt.Errorf("Could not create a scene: %v", err)
 	}
 
 	defer scene.Destroy()
