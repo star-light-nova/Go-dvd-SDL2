@@ -3,11 +3,11 @@ package scene
 import (
 	"dvd/app/control_menu"
 	"dvd/app/dvd"
+
+	"fmt"
 	"time"
 
 	"github.com/veandco/go-sdl2/sdl"
-
-	"fmt"
 )
 
 type Scene struct {

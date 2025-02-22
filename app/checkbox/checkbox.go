@@ -2,6 +2,7 @@ package checkbox
 
 import (
 	fc "dvd/app/font_config"
+
 	"fmt"
 
 	"github.com/veandco/go-sdl2/sdl"
