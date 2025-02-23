@@ -7,6 +7,7 @@
     - [Showcase](#showcase)
 - [How to?](#how-to)
     - [Prerequisites](#prerequisites)
+    - [Init](#init)
     - [Build and Run](#build-and-run)
 - [Lazy](#lazy)
 
@@ -31,6 +32,11 @@ Feel free to test and open PRs/issues to include/fix for other OS.
 ## Prerequisites
 * Go >= 1.23.4
 * [SDLv2](https://github.com/veandco/go-sdl2?tab=readme-ov-file#requirements)
+
+## Init
+```sh
+    go mod tidy
+```
 
 ## Build and Run
 In the cloned directory:
