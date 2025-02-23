@@ -3,11 +3,11 @@
 # Content
 - [What is SDL?](#what-is-sdl)
 - [About this project](#about-this-project)
-    - [Compatibility](##compatibility)
-    - [Showcase](##showcase)
+    - [Compatibility](#compatibility)
+    - [Showcase](#showcase)
 - [How to?](#how-to)
-    - [Prerequisites](##prerequisites)
-    - [Build](##build)
+    - [Prerequisites](#prerequisites)
+    - [Build and Run](#build-and-run)
 - [Lazy](#lazy)
 
 # What is SDL?
@@ -39,6 +39,6 @@ In the cloned directory:
 ```
 
 # Lazy
-You can download pre-built app (executable) only in this [folder](https://github.com/star-light-nova/dvd-video-sim/tree/master/download/)
+You can download pre-built app (executable) only in this [folder.](https://github.com/star-light-nova/dvd-video-sim/tree/master/download/)
 
 __Try hitting `c` while running the app.__
